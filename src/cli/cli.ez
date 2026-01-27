@@ -88,6 +88,20 @@ do get_and_parse_input() -> [string] {
 
 do command_line(command Command) -> int {
 
+    when command.operationToken{
+        is validOperations[0] { //run
+            std.println("User wants to run a asm file")
+        }
+
+        is validOperations[1] { //asm
+            std.println("User wants to assemble a file into bytecode/binary")
+
+        }
+        default{
+            std.println("Something else")
+        }
+
+    }
 
     return 0
 }

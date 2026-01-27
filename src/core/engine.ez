@@ -12,6 +12,7 @@ do init_engine() -> lib.ENGINE {
     engine.architecture = lib.ARCHITECTURE
     engine.memory = initMem
     engine.registers = make_registers()
+    engine.pc = 0
     engine.isRunning = true
 
     return copy(engine)

@@ -1,11 +1,12 @@
 module core
 
-
+import lib"../library"
 
 const OPERATION_CODE enum {
     STOP = 0
     LOAD //mem to registr
     STORE //register to mem
+    COPY //copy a value from one reg to another
     ADD //add values in registers
     SUBTRACT //subract values in registers
     JUMP_TO //jump to different memory adrees
@@ -13,14 +14,21 @@ const OPERATION_CODE enum {
 }
 
 
-//do handle_instructions(&engine Engine) {
-
-//    as_long_as engine.isRunning == true {
+//do handle_instructions(&engine Engine) {}
 
 
+do handle_instruction(&engine ENGINE, code OPERATION_CODE) -> ENGINE {
 
+    #strict
+    when code {
+        is OPERATION_CODE.LOAD{
 
-//    }
+        }
 
+    }
 
-//}
+}
+
+do load(&engine lib.ENGINE, value u8, registerIndex u8) {
+    engine.registers[registerIndex] = value
+}
