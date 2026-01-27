@@ -1,0 +1,29 @@
+module core
+
+import @std, @arrays
+import lib"../library"
+
+
+
+do init_engine() -> lib.ENGINE {
+    temp engine = new(lib.ENGINE)
+    temp initMem [u8] = {0,0,0,0,0,0,0,0}
+
+    engine.architecture = lib.ARCHITECTURE
+    engine.memory = initMem
+    engine.registers = make_registers()
+    engine.isRunning = true
+
+    return copy(engine)
+}
+
+do make_registers() -> [u8] {
+    temp registerArray [u8]
+
+    for i in range(0, lib.REGISTER_MAX_AMOUNT){
+        temp register u8 = 0
+        arrays.append(registerArray, register)
+    }
+
+    return registerArray
+}

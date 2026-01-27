@@ -1,0 +1,47 @@
+module library
+
+
+import @std
+
+do fetch_engine_info(engine ENGINE){
+    std.print(SHORT_LOGO)
+    format_engine_info(engine)
+}
+
+
+do format_engine_info(engine ENGINE){
+    std.println()
+    std.print("     Armadillo VM")
+    std.println()
+    for i in range(0, 20){
+        std.print("-")
+    }
+    std.println()
+
+    std.println("Architecture: ${engine.architecture}")
+    std.println("Registers: ${len(engine.registers)} x u8")
+    std.println("Memory: ${len(engine.memory)} bytes")
+}
+
+
+
+
+
+const SHORT_LOGO string =`
+ $$$$$$\     $$$$$$\
+$$  __$$\   $$  __$$\
+$$ /  $$ |  $$ /  $$ |
+$$$$$$$$ |  $$$$$$$  |
+$$  __$$ |  $$  __$$<
+$$ |  $$ |  $$ /  $$ |
+$$ |  $$ |  \$$$$$$  |
+\__|  \__|   \______/`
+
+
+//           Armadillo VM
+//----------------------------
+//Architecture: ARMADILLO-8
+//Registers: 4 × u8
+//Memory: 8 bytes
+//ISA: Custom (interpreted)
+//Endianness: Little

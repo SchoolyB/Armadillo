@@ -1,0 +1,33 @@
+module main
+
+import @std, @os
+import lib"../src/library"
+import "../src/core"
+import "../src/cli"
+
+do main(){
+
+    //std.println(lib.TITLE)
+
+    temp engine =  core.init_engine()
+    lib.fetch_engine_info(engine)
+    std.println(lib.VERSION)
+
+
+
+
+
+    //main loop
+    as_long_as engine.isRunning == true {
+        //cli.command_line()
+        temp parsedInput = cli.get_and_parse_input()
+        temp newCommand = cli.make_new_command(parsedInput)
+        std.println("newCommand: ${newCommand}")
+        temp result = cli.command_line(newCommand)
+
+
+
+    }
+
+
+}

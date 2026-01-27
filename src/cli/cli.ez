@@ -1,0 +1,93 @@
+module cli
+
+import @std, @os, @strings
+
+const validKeys [string, 2] = {
+    "armadillo",
+    "a8"
+}
+
+const validOperations [string, 2] = {
+    "run",
+    "asm"
+}
+
+const Command struct {
+    keyToken string //should always be armadillo
+    operationToken string
+    hasTarget bool //if true target token is filled and must be validated
+    targetToken string
+
+}
+
+
+//TODO: MOVE THESE TWO TO helpers.ez
+do check_if_valid_key(providedK string) -> bool {
+    if providedK not_in validKeys {
+        return false
+    }
+
+    return true
+}
+
+do check_if_valid_operation(providedO string) -> bool {
+    if providedO not_in validOperations{
+        return false
+    }
+
+    return true
+}
+
+do make_new_command(parsedInput [string]) -> Command{
+    temp c = new(Command)
+    if len(parsedInput) == 2 {
+        if !check_if_valid_key(parsedInput[0]) {
+            std.println("ERROR: Invalid Key Provided")
+            std.println("Valid keys are: ")
+            for_each vk in validKeys {
+                std.println(vk)
+            }
+
+            return c
+        }
+
+        if !check_if_valid_operation(parsedInput[1]) {
+            std.println("ERROR: Invalid operation Provided ${parsedInput[1]}")
+            std.println("Valid operations are: ")
+            for_each vc in validOperations {
+                std.println(vc)
+            }
+
+            return c
+        }
+
+        c.keyToken = parsedInput[0]
+        c.operationToken = parsedInput[1]
+        c.hasTarget = false
+
+
+    } or len(parsedInput) == 3 {
+        //TODO: Work on accepting target token
+    } otherwise {
+        std.println("ERROR: Wrong number of command line arguments provided. Expected: 2-3. Got: ${len(parsedInput)}")
+        return c
+    }
+
+
+    return copy(c)
+}
+
+
+do get_and_parse_input() -> [string] {
+    temp userInput = input()
+    temp inputArr [string] = strings.split(userInput, " ")
+    std.println(inputArr)
+
+    return inputArr
+}
+
+do command_line(command Command) -> int {
+
+
+    return 0
+}

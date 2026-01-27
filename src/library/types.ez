@@ -1,0 +1,13 @@
+module library
+
+
+const ENGINE struct {
+    architecture string
+    //Actually important shit below
+    memory [u8]
+    registers [u8]
+    pc u8
+    isRunning bool
+}
+
+

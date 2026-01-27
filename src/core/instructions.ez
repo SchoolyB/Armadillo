@@ -1,0 +1,26 @@
+module core
+
+
+
+const OPERATION_CODE enum {
+    STOP = 0
+    LOAD //mem to registr
+    STORE //register to mem
+    ADD //add values in registers
+    SUBTRACT //subract values in registers
+    JUMP_TO //jump to different memory adrees
+    JUMP_IF_ZERO //jump to a differnet address is current is 0
+}
+
+
+//do handle_instructions(&engine Engine) {
+
+//    as_long_as engine.isRunning == true {
+
+
+
+
+//    }
+
+
+//}
