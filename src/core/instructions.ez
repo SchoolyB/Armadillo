@@ -17,16 +17,17 @@ const OPERATION_CODE enum {
 //do handle_instructions(&engine Engine) {}
 
 
-do handle_instruction(&engine ENGINE, code OPERATION_CODE) -> ENGINE {
+do handle_instruction(&engine lib.ENGINE, code OPERATION_CODE) -> lib.ENGINE {
 
-    #strict
+
     when code {
         is OPERATION_CODE.LOAD{
 
         }
+    default {}
 
     }
-
+    return engine
 }
 
 do load(&engine lib.ENGINE, value u8, registerIndex u8) {

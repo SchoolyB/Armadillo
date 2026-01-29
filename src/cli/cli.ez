@@ -1,6 +1,7 @@
 module cli
 
 import @std, @os, @strings
+import "../core"
 
 const validKeys [string, 2] = {
     "armadillo",
@@ -65,9 +66,33 @@ do make_new_command(parsedInput [string]) -> Command{
         c.operationToken = parsedInput[1]
         c.hasTarget = false
 
-
     } or len(parsedInput) == 3 {
-        //TODO: Work on accepting target token
+        if !check_if_valid_key(parsedInput[0]) {
+            std.println("ERROR: Invalid Key Provided")
+            std.println("Valid keys are: ")
+            for_each vk in validKeys {
+                std.println(vk)
+            }
+
+            return c
+        }
+
+        if !check_if_valid_operation(parsedInput[1]) {
+            std.println("ERROR: Invalid operation Provided ${parsedInput[1]}")
+            std.println("Valid operations are: ")
+            for_each vc in validOperations {
+            std.println(vc)
+        }
+
+            return c
+        }
+
+        //FOr now just assigning target willy nilly, need to validate in the future
+        c.keyToken = parsedInput[0]
+        c.operationToken = parsedInput[1]
+        c.hasTarget = true
+        c.targetToken = parsedInput[2]
+
     } otherwise {
         std.println("ERROR: Wrong number of command line arguments provided. Expected: 2-3. Got: ${len(parsedInput)}")
         return c
@@ -79,8 +104,7 @@ do make_new_command(parsedInput [string]) -> Command{
 
 
 do get_and_parse_input() -> [string] {
-    temp userInput = input()
-    temp inputArr [string] = strings.split(userInput, " ")
+    temp inputArr [string] = strings.split(input(), " ")
     std.println(inputArr)
 
     return inputArr
@@ -91,10 +115,12 @@ do command_line(command Command) -> int {
     when command.operationToken{
         is validOperations[0] { //run
             std.println("User wants to run a asm file")
+            core.parse_assembly_lines(command.targetToken)
         }
 
         is validOperations[1] { //asm
             std.println("User wants to assemble a file into bytecode/binary")
+            //assemble()
 
         }
         default{
@@ -105,3 +131,5 @@ do command_line(command Command) -> int {
 
     return 0
 }
+
+

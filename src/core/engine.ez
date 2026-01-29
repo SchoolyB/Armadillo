@@ -1,6 +1,6 @@
 module core
 
-import @std, @arrays
+import @std, @arrays, @io, @strings
 import lib"../library"
 
 
@@ -27,4 +27,51 @@ do make_registers() -> [u8] {
     }
 
     return registerArray
+}
+
+
+//do run() -> int {
+
+//}
+
+//do assemble() -> int {
+
+
+//}
+
+//reads a .a8 assembly file, returns and array of lines???
+do parse_assembly_lines(file string) -> [string]{
+    temp lines, readErr = io.read_lines(file)
+    if readErr != nil {
+        return {"Read Error"}
+    } or len(lines) == 0 {
+        return {"No data found in file ${file}"}
+    }
+
+    lines = clean_and_validate_assembly_lines(lines)
+    //std.println(lines)
+    return lines
+}
+
+
+do clean_and_validate_assembly_lines(&lines [string]) -> [string]{
+    //First removing all single line comments
+    for i in range(0, len(lines)){
+        if strings.starts_with(lines[i], "#"){
+            std.println("Found # removing")
+            temp foo = arrays.remove(lines, i)
+            std.println("Found # at index: ${i}")
+            std.println("found and removed # from lines: ${foo}")
+        }
+    }
+
+    return lines
+    //for_each line in lines {
+    //    if strings.starts_with("#"){
+    //        arrays.pop()
+
+    //    }
+
+    //}
+
 }
