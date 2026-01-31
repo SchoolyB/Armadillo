@@ -13,6 +13,17 @@ const OPERATION_CODE enum {
     JUMP_IF_ZERO //jump to a differnet address is current is 0
 }
 
+const validOpCodes [string, 8] = {
+    "STOP",
+    "LOAD",
+    "STORE",
+    "COPY",
+    "ADD",
+    "SUBRACT",
+    "JUMP TO",
+    "JUMP IF ZERO"
+}
+
 
 //do handle_instructions(&engine Engine) {}
 

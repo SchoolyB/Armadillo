@@ -116,12 +116,12 @@ do command_line(command Command) -> int {
         is validOperations[0] { //run
             std.println("User wants to run a asm file")
             core.parse_assembly_lines(command.targetToken)
+            //run()
         }
 
         is validOperations[1] { //asm
             std.println("User wants to assemble a file into bytecode/binary")
-            //assemble()
-
+            temp _ = core.assemble(command.targetToken)
         }
         default{
             std.println("Something else")
