@@ -1,5 +1,4 @@
 #This an example of an Armadillo-8 Assembly Program
 
-LOAD 19 INTO A
-LOAD 2 INTO B
-ADD A AND B
+LOAD 1 INTO A
+STOP 2 INTO B

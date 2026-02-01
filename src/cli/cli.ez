@@ -105,7 +105,7 @@ do make_new_command(parsedInput [string]) -> Command{
 
 do get_and_parse_input() -> [string] {
     temp inputArr [string] = strings.split(input(), " ")
-    std.println(inputArr)
+    //std.println(inputArr)
 
     return inputArr
 }
@@ -114,13 +114,13 @@ do command_line(command Command) -> int {
 
     when command.operationToken{
         is validOperations[0] { //run
-            std.println("User wants to run a asm file")
+            //std.println("User wants to run a asm file")
             core.parse_assembly_lines(command.targetToken)
             //run()
         }
 
         is validOperations[1] { //asm
-            std.println("User wants to assemble a file into bytecode/binary")
+            //std.println("User wants to assemble a file into bytecode/binary")
             temp _ = core.assemble(command.targetToken)
         }
         default{

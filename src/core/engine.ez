@@ -1,8 +1,7 @@
 module core
 
-import @std, @arrays, @io, @strings, @maps
+import @std, @arrays, @io, @strings, @maps, @bytes
 import lib"../library"
-
 
 
 do init_engine() -> lib.ENGINE {
@@ -34,16 +33,51 @@ do make_registers() -> [u8] {
 
 //}
 
-do assemble(file string) -> int {
-    temp data [byte]
-    temp charAsByteArray [byte]
-    temp foo byte
+do assemble(file string) ->  {
+    temp linesAsBytes [byte]
+    temp lineTokens [string]
+    temp opCodeByte u8 = 0
 
     temp lines = parse_assembly_lines(file)
 
-    //todo: wtf do I do here???
-    // I think I need to store opcode in in first
+    for_each line in lines{ //for each line in asm file break down to bytecode
+        lineTokens = strings.split(line, " ") //split each line at whitespace
+
+        //Finding OpCodes match and store it in 0 index byte
+        for i in range(0, len(validOpCodes)){
+            if lineTokens[0] == validOpCodes[i]{
+                opCodeByte = u8(i)
+                arrays.append(linesAsBytes, opCodeByte)
+            }
+        }
+
+        //Starting at the first index of the lineTokens array convert to bytes..
+        //Skipped to first index because zero index WILL ALWAYS be opcode byte
+        for j in range(1, len(lineTokens)){
+            temp foo = bytes.from_string(lineTokens[j])
+
+            for_each f in foo{ //for each byte append to original array
+                //todo: currently all lines are appended to a single array as bytes...
+                //Where is the seperator to distinguish each line. for example:
+                // LOAD 1 INTO A
+                // STOP 2 INTO B
+                // takes up 14 bytes: LOAD/STOP = 1 byte...1/2 = 1 byte... INTO = 4 bytes....A/B =1 byte.. times 2 so 14 bytes
+                //
+                arrays.append(linesAsBytes, f)
+            }
+        }r
+    }
+
+    std.println(linesAsBytes)
     return 0
+}
+
+//do get_lines_opcode(line string) -> OPERATION_CODE {
+do get_lines_opcode(line string) {
+    temp index int = 0
+
+    temp tokens = strings.split(line, " ")
+    std.println(tokens)
 }
 
 //reads a .a8 assembly file, returns cleaned asm8 content
@@ -54,10 +88,10 @@ do parse_assembly_lines(file string) -> [string]{
     } or len(lines) == 0 {
         return {"No data found in file ${file}"}
     }
-
-    lines = clean_and_validate_assembly_lines(lines)
+    temp cleanedLines [string] = clean_and_validate_assembly_lines(lines)
+    //lines = clean_and_validate_assembly_lines(lines)
     //std.println(lines)
-    return lines
+    return cleanedLines
 }
 
 //TODO: Move me to helpers????
@@ -81,11 +115,12 @@ do clean_and_validate_assembly_lines(&lines [string]) -> [string]{
         temp tokens [string] = strings.split(line, " ")
         if tokens[0] not_in validOpCodes {
             std.println("ERROR: Invalid Operation Code found")
-            return {"ERROR:  Invalid Operation Code found"}
+            return {"ERROR: Invalid Operation Code found"}
         }
     }
 
     //TODO need to continue verifying the content of each indiviual assembly line
 
+    //std.println(typeof(lines)) //When non malformed lines exist in file output: [string]
     return lines
 }

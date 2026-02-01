@@ -22,7 +22,7 @@ do main(){
         //cli.command_line()
         temp parsedInput = cli.get_and_parse_input()
         temp newCommand = cli.make_new_command(parsedInput)
-        std.println("newCommand: ${newCommand}")
+        //std.println("newCommand: ${newCommand}")
         temp result = cli.command_line(newCommand)
 
 
