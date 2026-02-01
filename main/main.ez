@@ -12,13 +12,14 @@ do main(){
     temp engine =  core.init_engine()
     lib.fetch_engine_info(engine)
     std.println(lib.VERSION)
-
+    std.println()
 
 
 
 
     //main loop
     as_long_as engine.isRunning == true {
+        std.print("Armadillo VM >>:  ")
         //cli.command_line()
         temp parsedInput = cli.get_and_parse_input()
         temp newCommand = cli.make_new_command(parsedInput)
