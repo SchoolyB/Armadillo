@@ -33,7 +33,7 @@ do make_registers() -> [u8] {
 
 //}
 
-do assemble(file string) ->  {
+do assemble(file string) -> int  {
     temp linesAsBytes [byte]
     temp lineTokens [string]
     temp opCodeByte u8 = 0
@@ -41,7 +41,12 @@ do assemble(file string) ->  {
     temp lines = parse_assembly_lines(file)
 
     for_each line in lines{ //for each line in asm file break down to bytecode
-        lineTokens = strings.split(line, " ") //split each line at whitespace
+        temp lineTokens = strings.split(line, " ") //split each line at whitespace
+        for k in range(len(lineTokens) -1, -1, -1) { //remove sugar tokens like INTO, TO, AND, etc...
+            if lineTokens[k] in invalidTokens  == true {
+                arrays.remove_at(lineTokens, k)
+            }
+        }
 
         //Finding OpCodes match and store it in 0 index byte
         for i in range(0, len(validOpCodes)){
@@ -65,7 +70,7 @@ do assemble(file string) ->  {
                 //
                 arrays.append(linesAsBytes, f)
             }
-        }r
+        }
     }
 
     std.println(linesAsBytes)

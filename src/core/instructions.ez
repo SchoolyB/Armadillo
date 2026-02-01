@@ -24,6 +24,11 @@ const validOpCodes [string, 8] = {
     "JUMP IF ZERO"
 }
 
+const invalidTokens [string, 10] = {
+    "INTO",
+    "AND"
+}
+
 const OpCodeMap map[OPERATION_CODE:string] = {
     OPERATION_CODE.STOP: "STOP",
     OPERATION_CODE.LOAD: "LOAD",
