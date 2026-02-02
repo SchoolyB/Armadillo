@@ -33,48 +33,58 @@ do make_registers() -> [u8] {
 
 //}
 
-do assemble(file string) -> int  {
-    temp linesAsBytes [byte]
-    temp lineTokens [string]
-    temp opCodeByte u8 = 0
-
+do assemble(file string) -> [[byte]] {
+    temp allInstructions [[byte]]
     temp lines = parse_assembly_lines(file)
 
-    for_each line in lines{ //for each line in asm file break down to bytecode
+    for_each line in lines { //for each line in asm file break down to bytecode
+        temp instruction [byte]  //each line gets its own byte array
         temp lineTokens = strings.split(line, " ") //split each line at whitespace
-        for k in range(len(lineTokens) -1, -1, -1) { //remove sugar tokens like INTO, TO, AND, etc...
-            if lineTokens[k] in invalidTokens  == true {
+
+        //remove sugar tokens like INTO, TO, AND, etc...
+        for k in range(len(lineTokens) - 1, -1, -1) {
+            if lineTokens[k] in invalidTokens == true {
                 arrays.remove_at(lineTokens, k)
             }
         }
 
-        //Finding OpCodes match and store it in 0 index byte
-        for i in range(0, len(validOpCodes)){
-            if lineTokens[0] == validOpCodes[i]{
-                opCodeByte = u8(i)
-                arrays.append(linesAsBytes, opCodeByte)
+        //Process each token in the line
+        for i in range(0, len(lineTokens)) {
+            temp token = lineTokens[i]
+
+            //Finding OpCodes match and store it in 0 index byte
+            if i == 0 {
+                for j in range(0, len(validOpCodes)) {
+                    if token == validOpCodes[j] {
+                        arrays.append(instruction, u8(j))
+                    }
+                }
+                continue
+            }
+
+            //if the token it's a register convert to index..A=0, B=1, C=2, D=3
+            temp isRegister = false
+            for r in range(0, len(lib.REGISTERS)) {
+                if token == lib.REGISTERS[r] {
+                    arrays.append(instruction, u8(r))
+                    isRegister = true
+                }
+            }
+            if isRegister == true {
+                continue
+            }
+
+            //if the token is a number convert it to actual int valu
+            if strings.is_numeric(token) == true {
+                temp numVal = strings.to_int(token)
+                arrays.append(instruction, u8(numVal))
             }
         }
 
-        //Starting at the first index of the lineTokens array convert to bytes..
-        //Skipped to first index because zero index WILL ALWAYS be opcode byte
-        for j in range(1, len(lineTokens)){
-            temp foo = bytes.from_string(lineTokens[j])
-
-            for_each f in foo{ //for each byte append to original array
-                //todo: currently all lines are appended to a single array as bytes...
-                //Where is the seperator to distinguish each line. for example:
-                // LOAD 1 INTO A
-                // STOP 2 INTO B
-                // takes up 14 bytes: LOAD/STOP = 1 byte...1/2 = 1 byte... INTO = 4 bytes....A/B =1 byte.. times 2 so 14 bytes
-                //
-                arrays.append(linesAsBytes, f)
-            }
-        }
+        arrays.append(allInstructions, instruction)  //append this line's instruction
     }
 
-    std.println(linesAsBytes)
-    return 0
+    return allInstructions
 }
 
 //do get_lines_opcode(line string) -> OPERATION_CODE {

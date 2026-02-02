@@ -27,3 +27,4 @@ temp VERSION string = "Version: Pre_Rel_v0.1.0_dev"
 
 const ARCHITECTURE string = "Armadillo-8"
 const REGISTER_MAX_AMOUNT = 4
+const REGISTERS [string, 4] = {"A", "B", "C", "D"}
