@@ -3,139 +3,51 @@ module core
 import @std, @arrays, @io, @strings, @maps, @bytes
 import lib"../library"
 
+do init_cpu() -> lib.CPU {
+    temp cpu = new(lib.CPU)
+    temp initMem [byte] = {0,0,0,0,0,0,0,0}
 
-do init_engine() -> lib.ENGINE {
-    temp engine = new(lib.ENGINE)
-    temp initMem [u8] = {0,0,0,0,0,0,0,0}
+    cpu.architecture = lib.ARCHITECTURE
+    cpu.memory = initMem
+    cpu.registers = make_registers()
+    cpu.pc = 0
+    cpu.isRunning = true
 
-    engine.architecture = lib.ARCHITECTURE
-    engine.memory = initMem
-    engine.registers = make_registers()
-    engine.pc = 0
-    engine.isRunning = true
-
-    return copy(engine)
+    return copy(cpu)
 }
 
-do make_registers() -> [u8] {
-    temp registerArray [u8]
+//'Dynamically' creates an array of registers for the CPU.
+// made it dynamic in the event i add more registers in the future.
+do make_registers() -> [byte] {
+    temp registerArray [byte]
 
     for i in range(0, lib.REGISTER_MAX_AMOUNT){
-        temp register u8 = 0
+        temp register byte = 0
         arrays.append(registerArray, register)
     }
 
     return registerArray
 }
 
-
-//do run() -> int {
-
-//}
-
-do assemble(file string) -> [[byte]] {
-    temp allInstructions [[byte]]
-    temp lines = parse_assembly_lines(file)
-
-    for_each line in lines { //for each line in asm file break down to bytecode
-        temp instruction [byte]  //each line gets its own byte array
-        temp lineTokens = strings.split(line, " ") //split each line at whitespace
-
-        //remove sugar tokens like INTO, TO, AND, etc...
-        for k in range(len(lineTokens) - 1, -1, -1) {
-            if lineTokens[k] in invalidTokens == true {
-                arrays.remove_at(lineTokens, k)
+//run passed in asm8 instructions
+do run(instructions [[byte]], &cpu lib.CPU) -> int {
+    for_each instruction in instructions {
+        temp decoded = decode_instructions(instruction)
+        std.println(decoded.opCode)
+        when int(decoded.opCode) {
+            is 0 {
+                std.println("STOP INSTRUCTION ENCOUNTERED...STOPPING")
+                return 0
             }
-        }
-
-        //Process each token in the line
-        for i in range(0, len(lineTokens)) {
-            temp token = lineTokens[i]
-
-            //Finding OpCodes match and store it in 0 index byte
-            if i == 0 {
-                for j in range(0, len(validOpCodes)) {
-                    if token == validOpCodes[j] {
-                        arrays.append(instruction, u8(j))
-                    }
-                }
-                continue
+            is 1 { //LOAD value into register
+                cpu.registers[int(decoded.register)] = decoded.value
             }
-
-            //if the token it's a register convert to index..A=0, B=1, C=2, D=3
-            temp isRegister = false
-            for r in range(0, len(lib.REGISTERS)) {
-                if token == lib.REGISTERS[r] {
-                    arrays.append(instruction, u8(r))
-                    isRegister = true
-                }
+            is 2 { //STORE register into memory
+                cpu.memory[int(decoded.value)] = cpu.registers[int(decoded.register)]
             }
-            if isRegister == true {
-                continue
-            }
-
-            //if the token is a number convert it to actual int valu
-            if strings.is_numeric(token) == true {
-                temp numVal = strings.to_int(token)
-                arrays.append(instruction, u8(numVal))
-            }
-        }
-
-        arrays.append(allInstructions, instruction)  //append this line's instruction
-    }
-
-    return allInstructions
-}
-
-//do get_lines_opcode(line string) -> OPERATION_CODE {
-do get_lines_opcode(line string) {
-    temp index int = 0
-
-    temp tokens = strings.split(line, " ")
-    std.println(tokens)
-}
-
-//reads a .a8 assembly file, returns cleaned asm8 content
-do parse_assembly_lines(file string) -> [string]{
-    temp lines, readErr = io.read_lines(file)
-    if readErr != nil {
-        return {"Read Error"}
-    } or len(lines) == 0 {
-        return {"No data found in file ${file}"}
-    }
-    temp cleanedLines [string] = clean_and_validate_assembly_lines(lines)
-    //lines = clean_and_validate_assembly_lines(lines)
-    //std.println(lines)
-    return cleanedLines
-}
-
-//TODO: Move me to helpers????
-do clean_and_validate_assembly_lines(&lines [string]) -> [string]{
-    //First removing all single line comments
-    for i in range(0, len(lines) - 1){
-        if strings.starts_with(lines[i], "#"){
-            arrays.remove_at(lines, i)
+            default {std.println("Defaulting")}
         }
     }
 
-    //Next removing any blank lines
-    for j in range(len(lines) - 1, -1, -1) { //Maybe a language bug but having 0 be the end would work. -1 does
-        if lines[j] == ""{
-            arrays.remove_at(lines, j)
-        }
-    }
-
-    //Next verify valid opcodes at start of each line
-    for_each line in lines{
-        temp tokens [string] = strings.split(line, " ")
-        if tokens[0] not_in validOpCodes {
-            std.println("ERROR: Invalid Operation Code found")
-            return {"ERROR: Invalid Operation Code found"}
-        }
-    }
-
-    //TODO need to continue verifying the content of each indiviual assembly line
-
-    //std.println(typeof(lines)) //When non malformed lines exist in file output: [string]
-    return lines
+    return 0
 }

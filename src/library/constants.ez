@@ -28,3 +28,41 @@ temp VERSION string = "Version: Pre_Rel_v0.1.0_dev"
 const ARCHITECTURE string = "Armadillo-8"
 const REGISTER_MAX_AMOUNT = 4
 const REGISTERS [string, 4] = {"A", "B", "C", "D"}
+
+const validOpCodes [string, 8] = {
+    "STOP",
+    "LOAD",
+    "STORE",
+    "COPY",
+    "ADD",
+    "SUBRACT",
+    "JUMP TO",
+    "JUMP IF ZERO"
+}
+
+const invalidTokens [string, 10] = { //set to arbitray len incase I add more...
+    "INTO",
+    "AND",
+    "TO"
+}
+
+const OpCodeMap map[OP_CODE:string] = {
+    OP_CODE.STOP: "STOP",
+    OP_CODE.LOAD: "LOAD",
+    OP_CODE.STORE: "STORE",
+    OP_CODE.COPY: "COPY",
+    OP_CODE.ADD: "ADD",
+    OP_CODE.SUBTRACT: "SUBTRACT",
+    OP_CODE.JUMP_TO: "JUMP_TO",
+    OP_CODE.JUMP_IF_ZERO: "JUMP_IF_ZERO"
+}
+
+const validKeys [string, 2] = {
+    "armadillo",
+    "a8"
+}
+
+const validOperations [string, 2] = {
+    "run",
+    "asm"
+}

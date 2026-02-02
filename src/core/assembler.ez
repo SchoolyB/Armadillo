@@ -1,0 +1,115 @@
+module core
+
+import @std, @arrays, @io, @strings
+import lib"../library"
+
+//Parses insrcutions into struct to be used in run() function
+do decode_instructions(instructions [byte]) -> lib.DecodedInstruction {
+    temp di = new(lib.DecodedInstruction)
+    di.opCode = instructions[0]
+    di.value = instructions[1]
+    di.register = instructions[2]
+
+    return copy(di)
+}
+
+//Takes the content of the passed in file, cleans and assembles instructions into byte code
+// returns 2D array of instructions
+do assemble(file string) -> [[byte]] {
+    temp allInstructions [[byte]]
+    temp lines = parse_assembly_lines(file)
+
+    for_each line in lines { //for each line in asm file break down to bytecode
+        temp instruction [byte]  //each line gets its own byte array
+        temp lineTokens = strings.split(line, " ") //split each line at whitespace
+
+        //remove sugar tokens like INTO, TO, AND, etc...
+        for k in range(len(lineTokens) - 1, -1, -1) {
+            if lineTokens[k] in lib.invalidTokens == true {
+                arrays.remove_at(lineTokens, k)
+            }
+        }
+
+        for i in range(0, len(lineTokens)) {
+            temp token = lineTokens[i]
+
+            //Finding OpCodes match and store it in 0 index byte
+            if i == 0 {
+                for j in range(0, len(lib.validOpCodes)) {
+                    if token == lib.validOpCodes[j] {
+                        arrays.append(instruction, u8(j))
+                    }
+                }
+                continue
+            }
+
+            //if the token it's a register convert to index..A=0, B=1, C=2, D=3
+            temp isRegister = false
+            for r in range(0, len(lib.REGISTERS)) {
+                if token == lib.REGISTERS[r] {
+                    arrays.append(instruction, u8(r))
+                    isRegister = true
+                }
+            }
+            if isRegister == true {
+                continue
+            }
+
+            //if the token is a number convert it to actual int valu
+            if strings.is_numeric(token) == true {
+                temp numVal = strings.to_int(token)
+                arrays.append(instruction, u8(numVal))
+            }
+        }
+
+        arrays.append(allInstructions, instruction)  //append lines instruction
+    }
+
+    return allInstructions
+}
+
+//reads an .a8 assembly file, returns cleaned asm8 content
+do parse_assembly_lines(file string) -> [string]{
+    temp cleanedLines [string]
+    temp lines, readErr = io.read_lines(file)
+
+    if readErr != nil {
+        return {"Read Error. Could not read file: ${file}"}
+    } or len(lines) == 0 {
+        return {"No data found in file ${file}"}
+    }
+
+    cleanedLines = clean_and_validate_assembly_lines(lines)
+
+    return cleanedLines
+}
+
+//Sanitizes each passed in line(lines) and returns a "cleaned" array
+do clean_and_validate_assembly_lines(&lines [string]) -> [string]{
+    //First removing all single line comments
+    for i in range(0, len(lines) - 1){
+        if strings.starts_with(lines[i], "#"){
+            arrays.remove_at(lines, i)
+        }
+    }
+
+    //Next removing any blank lines
+    for j in range(len(lines) - 1, -1, -1) { //Maybe a language bug but having 0 be the end would work. -1 does
+        if lines[j] == ""{
+            arrays.remove_at(lines, j)
+        }
+    }
+
+    //Next verify valid opcodes at start of each line
+    for_each line in lines{
+        temp tokens [string] = strings.split(line, " ")
+        if tokens[0] not_in lib.validOpCodes {
+            std.println("ERROR: Invalid Operation Code found")
+            return {"ERROR: Invalid Operation Code found"}
+        }
+    }
+
+    //TODO need to continue verifying the content of each indiviual assembly line
+
+    return lines
+}

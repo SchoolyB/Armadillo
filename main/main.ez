@@ -7,28 +7,18 @@ import "../src/cli"
 
 do main(){
 
-    //std.println(lib.TITLE)
-
-    temp engine =  core.init_engine()
-    lib.fetch_engine_info(engine)
+    temp cpu = core.init_cpu()
+    lib.fetch_cpu_info(cpu)
     std.println(lib.VERSION)
-    std.println()
+    std.println("============================")
 
-
-
-
-    //main loop
-    as_long_as engine.isRunning == true {
+    as_long_as cpu.isRunning == true {
         std.print("Armadillo VM >>:  ")
         //cli.command_line()
         temp parsedInput = cli.get_and_parse_input()
         temp newCommand = cli.make_new_command(parsedInput)
         //std.println("newCommand: ${newCommand}")
-        temp result = cli.command_line(newCommand)
-
-
+        temp result = cli.command_line(cpu, newCommand)
 
     }
-
-
 }

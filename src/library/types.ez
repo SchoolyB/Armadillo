@@ -1,12 +1,35 @@
 module library
 
 
-const ENGINE struct {
+const CPU struct {
     architecture string
-    memory [u8]
-    registers [u8]
+    memory [byte]
+    registers [byte]
     pc u8
     isRunning bool
 }
 
+const DecodedInstruction struct {
+    opCode byte
+    value byte
+    register byte
+}
 
+const OP_CODE enum {
+    STOP = 0
+    LOAD //mem to registr
+    STORE //register to mem
+    COPY //copy a value from one reg to another
+    ADD //add values in registers
+    SUBTRACT //subract values in registers
+    JUMP_TO //jump to different memory adrees
+    JUMP_IF_ZERO //jump to a differnet address is current is 0
+}
+
+const Command struct {
+    keyToken string //should always be armadillo
+    operationToken string
+    hasTarget bool //if true target token is filled and must be validated
+    targetToken string
+
+}

@@ -1,30 +1,12 @@
 module cli
 
-import @std, @os, @strings
+import @std, @strings
 import "../core"
-
-const validKeys [string, 2] = {
-    "armadillo",
-    "a8"
-}
-
-const validOperations [string, 2] = {
-    "run",
-    "asm"
-}
-
-const Command struct {
-    keyToken string //should always be armadillo
-    operationToken string
-    hasTarget bool //if true target token is filled and must be validated
-    targetToken string
-
-}
+import lib"../library"
 
 
-//TODO: MOVE THESE TWO TO helpers.ez
 do check_if_valid_key(providedK string) -> bool {
-    if providedK not_in validKeys {
+    if providedK not_in lib.validKeys {
         return false
     }
 
@@ -32,20 +14,21 @@ do check_if_valid_key(providedK string) -> bool {
 }
 
 do check_if_valid_operation(providedO string) -> bool {
-    if providedO not_in validOperations{
+    if providedO not_in lib.validOperations{
         return false
     }
 
     return true
 }
 
-do make_new_command(parsedInput [string]) -> Command{
-    temp c = new(Command)
+do make_new_command(parsedInput [string]) -> lib.Command{
+    temp c = new(lib.Command)
     if len(parsedInput) == 2 {
         if !check_if_valid_key(parsedInput[0]) {
             std.println("ERROR: Invalid Key Provided")
             std.println("Valid keys are: ")
-            for_each vk in validKeys {
+              temp keys = lib.validKeys
+            for_each vk in keys {
                 std.println(vk)
             }
 
@@ -55,7 +38,7 @@ do make_new_command(parsedInput [string]) -> Command{
         if !check_if_valid_operation(parsedInput[1]) {
             std.println("ERROR: Invalid operation Provided ${parsedInput[1]}")
             std.println("Valid operations are: ")
-            for_each vc in validOperations {
+            for_each vc in lib.validOperations {
                 std.println(vc)
             }
 
@@ -70,7 +53,7 @@ do make_new_command(parsedInput [string]) -> Command{
         if !check_if_valid_key(parsedInput[0]) {
             std.println("ERROR: Invalid Key Provided")
             std.println("Valid keys are: ")
-            for_each vk in validKeys {
+            for_each vk in lib.validKeys {
                 std.println(vk)
             }
 
@@ -80,14 +63,14 @@ do make_new_command(parsedInput [string]) -> Command{
         if !check_if_valid_operation(parsedInput[1]) {
             std.println("ERROR: Invalid operation Provided ${parsedInput[1]}")
             std.println("Valid operations are: ")
-            for_each vc in validOperations {
+            for_each vc in lib.validOperations {
             std.println(vc)
         }
 
             return c
         }
 
-        //FOr now just assigning target willy nilly, need to validate in the future
+        //TODO: need to validate target in the future
         c.keyToken = parsedInput[0]
         c.operationToken = parsedInput[1]
         c.hasTarget = true
@@ -110,15 +93,16 @@ do get_and_parse_input() -> [string] {
     return inputArr
 }
 
-do command_line(command Command) -> int {
+do command_line(&cpu lib.CPU, command lib.Command) -> int {
 
     when command.operationToken{
-        is validOperations[0] { //run
+        is lib.validOperations[0] { //run
             core.parse_assembly_lines(command.targetToken)
-            //run()
+            temp asm = core.assemble(command.targetToken)
+            temp _ = core.run(asm, cpu)
         }
 
-        is validOperations[1] { //asm
+        is lib.validOperations[1] { //asm
             temp result = core.assemble(command.targetToken)
             std.println(result)
         }
@@ -130,5 +114,3 @@ do command_line(command Command) -> int {
 
     return 0
 }
-
-
