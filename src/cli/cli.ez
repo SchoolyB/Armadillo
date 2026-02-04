@@ -6,7 +6,7 @@ import lib"../library"
 
 
 do check_if_valid_key(providedK string) -> bool {
-    if providedK not_in lib.validKeys {
+    if providedK not_in lib.VALID_KEYS {
         return false
     }
 
@@ -14,7 +14,7 @@ do check_if_valid_key(providedK string) -> bool {
 }
 
 do check_if_valid_operation(providedO string) -> bool {
-    if providedO not_in lib.validOperations{
+    if providedO not_in lib.VALID_OPERATIONS{
         return false
     }
 
@@ -25,9 +25,7 @@ do make_new_command(parsedInput [string]) -> lib.Command{
     temp c = new(lib.Command)
     if len(parsedInput) == 2 {
         if !check_if_valid_key(parsedInput[0]) {
-            std.println("ERROR: Invalid Key Provided")
-            std.println("Valid keys are: ")
-              temp keys = lib.validKeys
+              temp keys = lib.VALID_KEYS
             for_each vk in keys {
                 std.println(vk)
             }
@@ -36,9 +34,7 @@ do make_new_command(parsedInput [string]) -> lib.Command{
         }
 
         if !check_if_valid_operation(parsedInput[1]) {
-            std.println("ERROR: Invalid operation Provided ${parsedInput[1]}")
-            std.println("Valid operations are: ")
-            for_each vc in lib.validOperations {
+            for_each vc in lib.VALID_OPERATIONS {
                 std.println(vc)
             }
 
@@ -51,9 +47,7 @@ do make_new_command(parsedInput [string]) -> lib.Command{
 
     } or len(parsedInput) == 3 {
         if !check_if_valid_key(parsedInput[0]) {
-            std.println("ERROR: Invalid Key Provided")
-            std.println("Valid keys are: ")
-            for_each vk in lib.validKeys {
+            for_each vk in lib.VALID_KEYS {
                 std.println(vk)
             }
 
@@ -61,9 +55,7 @@ do make_new_command(parsedInput [string]) -> lib.Command{
         }
 
         if !check_if_valid_operation(parsedInput[1]) {
-            std.println("ERROR: Invalid operation Provided ${parsedInput[1]}")
-            std.println("Valid operations are: ")
-            for_each vc in lib.validOperations {
+            for_each vc in lib.VALID_OPERATIONS {
             std.println(vc)
         }
 
@@ -81,35 +73,37 @@ do make_new_command(parsedInput [string]) -> lib.Command{
         return c
     }
 
-
     return copy(c)
 }
 
 
 do get_and_parse_input() -> [string] {
-    temp inputArr [string] = strings.split(input(), " ")
-    //std.println(inputArr)
-
-    return inputArr
+    return strings.split(input(), " ")
 }
 
 do command_line(&cpu lib.CPU, command lib.Command) -> int {
 
     when command.operationToken{
-        is lib.validOperations[0] { //run
+        is lib.VALID_OPERATIONS[0] { //run
             core.parse_assembly_lines(command.targetToken)
             temp asm = core.assemble(command.targetToken)
             temp _ = core.run(asm, cpu)
         }
 
-        is lib.validOperations[1] { //asm
+        is lib.VALID_OPERATIONS[1] { //asm
             temp result = core.assemble(command.targetToken)
+            std.println("Assembled Content of file ${command.targetToken}: ")
             std.println(result)
         }
         default{
-            std.println("Something else")
+            std.println("Invalid operation. Valid operations are: ")
+            temp count uint = 0
+            for_each op in lib.VALID_OPERATIONS{
+                count += 1
+                std.println("${count}.${op}")
+            }
+            std.println()
         }
-
     }
 
     return 0

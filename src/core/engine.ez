@@ -1,6 +1,6 @@
 module core
 
-import @std, @arrays, @io, @strings, @maps, @bytes
+import @std, @arrays
 import lib"../library"
 
 do init_cpu() -> lib.CPU {

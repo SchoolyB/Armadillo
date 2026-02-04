@@ -1,7 +1,7 @@
 module library
 
 
-import @std
+import @std, @io
 
 do fetch_cpu_info(cpu CPU){
     std.print(SHORT_LOGO)
@@ -21,4 +21,18 @@ do format_cpu_info(cpu CPU){
     std.println("Architecture: ${cpu.architecture}")
     std.println("Registers: ${len(cpu.registers)} x u8")
     std.println("Memory: ${len(cpu.memory)} bytes")
+}
+
+
+do fetch_version() -> string {
+    temp data, readErr = io.read_lines("./version")
+    if readErr != nil {
+        return "Error: Version Not Fetched"
+    }
+
+    if len(data) != 1 {
+        return "Error: Malformed version information found"
+    }
+
+    return data[0]
 }

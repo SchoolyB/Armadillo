@@ -25,7 +25,7 @@ do assemble(file string) -> [[byte]] {
 
         //remove sugar tokens like INTO, TO, AND, etc...
         for k in range(len(lineTokens) - 1, -1, -1) {
-            if lineTokens[k] in lib.invalidTokens == true {
+            if lineTokens[k] in lib.INVALID_TOKENS == true {
                 arrays.remove_at(lineTokens, k)
             }
         }
@@ -35,8 +35,8 @@ do assemble(file string) -> [[byte]] {
 
             //Finding OpCodes match and store it in 0 index byte
             if i == 0 {
-                for j in range(0, len(lib.validOpCodes)) {
-                    if token == lib.validOpCodes[j] {
+                for j in range(0, len(lib.VALID_OP_CODES)) {
+                if token == lib.VALID_OP_CODES[j] {
                         arrays.append(instruction, u8(j))
                     }
                 }
@@ -103,7 +103,7 @@ do clean_and_validate_assembly_lines(&lines [string]) -> [string]{
     //Next verify valid opcodes at start of each line
     for_each line in lines{
         temp tokens [string] = strings.split(line, " ")
-        if tokens[0] not_in lib.validOpCodes {
+        if tokens[0] not_in lib.VALID_OP_CODES {
             std.println("ERROR: Invalid Operation Code found")
             return {"ERROR: Invalid Operation Code found"}
         }

@@ -31,5 +31,4 @@ const Command struct {
     operationToken string
     hasTarget bool //if true target token is filled and must be validated
     targetToken string
-
 }

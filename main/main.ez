@@ -1,6 +1,6 @@
 module main
 
-import @std, @os
+import @std
 import lib"../src/library"
 import "../src/core"
 import "../src/cli"
@@ -9,16 +9,14 @@ do main(){
 
     temp cpu = core.init_cpu()
     lib.fetch_cpu_info(cpu)
-    std.println(lib.VERSION)
+    temp version = lib.fetch_version()
+    std.println("Version: ${version}")
     std.println("============================")
 
     as_long_as cpu.isRunning == true {
         std.print("Armadillo VM >>:  ")
-        //cli.command_line()
         temp parsedInput = cli.get_and_parse_input()
         temp newCommand = cli.make_new_command(parsedInput)
-        //std.println("newCommand: ${newCommand}")
         temp result = cli.command_line(cpu, newCommand)
-
     }
 }
