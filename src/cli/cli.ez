@@ -87,13 +87,15 @@ do command_line(&cpu lib.CPU, command lib.Command) -> int {
         is lib.VALID_OPERATIONS[0] { //run
             core.parse_assembly_lines(command.targetToken)
             temp asm = core.assemble(command.targetToken)
-            temp _ = core.run(asm, cpu)
+            temp runResult = core.run(asm, cpu)
+            return runResult
         }
 
         is lib.VALID_OPERATIONS[1] { //asm
             temp result = core.assemble(command.targetToken)
             std.println("Assembled Content of file ${command.targetToken}: ")
             std.println(result)
+
         }
         default{
             std.println("Invalid operation. Valid operations are: ")

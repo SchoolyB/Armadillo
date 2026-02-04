@@ -37,7 +37,7 @@ do run(instructions [[byte]], &cpu lib.CPU) -> int {
         when int(decoded.opCode) {
             is 0 {
                 std.println("STOP INSTRUCTION ENCOUNTERED...STOPPING")
-                return 0
+                return -1
             }
             is 1 { //LOAD value into register
                 cpu.registers[int(decoded.register)] = decoded.value
